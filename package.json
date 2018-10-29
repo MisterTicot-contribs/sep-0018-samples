@@ -1,0 +1,12 @@
+{
+  "name": "stellar-draft-0005",
+  "version": "1.0.0",
+  "description": "Possible implementations for draft-0005",
+  "author": "MisterTicot",
+  "repository": "github:MisterTicot/stellar-draft-0005",
+  "license": "MIT",
+  "dependencies": {
+    "safe-buffer": "^5.1.2",
+    "stellar-sdk": "^0.11.0"
+  }
+}
