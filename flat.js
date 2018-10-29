@@ -6,8 +6,8 @@
  */
 const accountData = exports
 
-const Buffer = require('safe-buffer').Buffer
-const StellarSdk = require('stellar-sdk')
+const Buffer = require("safe-buffer").Buffer
+const StellarSdk = require("stellar-sdk")
 
 /*******************************************************************************
  * Base implementation
@@ -51,34 +51,34 @@ function makeWriteTx (account, dataAttr) {
 }
 
 function fromBase64 (value) {
-  return Buffer.from(value, 'base64')
+  return Buffer.from(value, "base64")
 }
 
 function toBase64 (value) {
-  if (value === undefined || value === null) value = Buffer.from('')
-  else if (!(value instanceof Buffer)) value = Buffer.from(value, 'utf8')
-  return value.toString('base64')
+  if (value === undefined || value === null) value = Buffer.from("")
+  else if (!(value instanceof Buffer)) value = Buffer.from(value, "utf8")
+  return value.toString("base64")
 }
 
 /*******************************************************************************
  * Demo
  */
 
-const account = new StellarSdk.Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0')
+const account = new StellarSdk.Account("GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF", "0")
 account.data_attr = {
-  '....': toBase64('InvalidKey1'),
-  'conf.multisig': toBase64('InvalidKey2'),
-  'conf.multisig.collector': toBase64('GASE...TWUY'),
-  'conf.multisig.network': toBase64('test'),
-  'Invalid Key 3': toBase64('...'),
-  'profile.alias': toBase64('MisterTicot'),
-  'wallet.btc': toBase64('...'),
-  'wallet.eth': toBase64('...'),
-  'wallet.xrp': toBase64('...')
+  "....": toBase64("InvalidKey1"),
+  "conf.multisig": toBase64("InvalidKey2"),
+  "conf.multisig.collector": toBase64("GASE...TWUY"),
+  "conf.multisig.network": toBase64("test"),
+  "Invalid Key 3": toBase64("..."),
+  "profile.alias": toBase64("MisterTicot"),
+  "wallet.btc": toBase64("..."),
+  "wallet.eth": toBase64("..."),
+  "wallet.xrp": toBase64("...")
 }
 
 /// Parse
-const base64ToUtf8 = x => Buffer.from(x, 'base64').toString('utf8')
+const base64ToUtf8 = x => Buffer.from(x, "base64").toString("utf8")
 const dataAttr = accountData.read(account, base64ToUtf8)
 console.log(dataAttr)
 
@@ -86,7 +86,7 @@ console.log()
 /// Iterate
 for (let key in dataAttr) {
   if (!key.match(/^wallet./)) continue
-  console.log(key.substr(7) + ': ' + dataAttr[key])
+  console.log(key.substr(7) + ": " + dataAttr[key])
 }
 
 console.log()
@@ -101,7 +101,7 @@ console.log(scope)
 for (let key in dataAttr) {
   if (key.match(/^conf\.multisig/)) delete dataAttr[key]
 }
-dataAttr['conf.multisig.collector'] = 'https://example.org/.well_known/multisig.toml'
+dataAttr["conf.multisig.collector"] = "https://example.org/.well_known/multisig.toml"
 
 console.log()
 /// Write changes on the legder
