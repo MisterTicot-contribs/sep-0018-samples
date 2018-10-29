@@ -27,7 +27,7 @@ accountData.read = function (account, converter = fromBase64) {
   return expand(dataAttr)
 }
 
-function expand(dataAttr) {
+function expand (dataAttr) {
   const keys = Object.keys(dataAttr).sort((a, b) => b.localeCompare(a))
   const tree = {}
   
@@ -38,7 +38,7 @@ function expand(dataAttr) {
       if (!focus[next]) focus[next] = {}
       focus = focus[next]
     }
-    /// Solve key/namespace conflict thanks to reverse sorting
+    /// Solve key/namespace conflict thanks to reverse sorting.
     if (!focus[path[0]]) focus[path[0]] = dataAttr[key]
   })
   
@@ -105,25 +105,25 @@ account.data_attr = {
 
 /// Parse
 const base64ToUtf8 = x => Buffer.from(x, 'base64').toString('utf8')
-const dataAttr = accountData.read(account, base64ToUtf8)
-console.log(dataAttr)
+const dataTree = accountData.read(account, base64ToUtf8)
+console.log(dataTree)
 
 console.log()
 /// Iterate
-for (let coin in dataAttr.wallet) {
-  console.log(coin + ': ' + dataAttr.wallet[coin])
+for (let coin in dataTree.wallet) {
+  console.log(coin + ': ' + dataTree.wallet[coin])
 }
 
 console.log()
 /// Get scope object
-const scope = dataAttr.conf && dataAttr.conf.multisig
+const scope = dataTree.conf && dataTree.conf.multisig
 console.log(scope)
 
 /// Rewrite scope
-if (!dataAttr.conf) dataAttr.conf = {}
-dataAttr.conf.multisig = { collector: 'https://example.org/.well_known/multisig.toml' }
+if (!dataTree.conf) dataTree.conf = {}
+dataTree.conf.multisig = { collector: 'https://example.org/.well_known/multisig.toml' }
 
 console.log()
 /// Write changes on the legder
-const tx = accountData.write(account, dataAttr)
+const tx = accountData.write(account, dataTree)
 console.log(tx.operations)
