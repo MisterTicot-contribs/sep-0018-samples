@@ -1,26 +1,38 @@
 "use_strict"
 /**
- * Reference implementation for getting/setting account data namespace.
+ * Reference implementation for reading/writing account data namespace.
  * 
- * With tree, with character restriction.
+ * Tree, with character restriction.
  */
-const accountData = exports
+const accountNamespace = exports
 
 const Buffer = require("safe-buffer").Buffer
 const StellarSdk = require("stellar-sdk")
 
-/*******************************************************************************
- * Base implementation
+/**
+ * Returns `true` is **path** is a valid data entry namespace path, `false`
+ * otherwise. Changing this method will affect the whole library.
+ *  
+ * @param  {string} key A data entry name
+ * @return {Boolean}
  */
-
-accountData.isValidKey = function (key) {
-  return key.match(/^[_a-z][_a-z0-9]*(\.[_a-z][_a-z0-9]*)*$/)
+accountNamespace.isValidPath = function (path) {
+  return path.match(/^[_a-z][_a-z0-9]*(\.[_a-z][_a-z0-9]*)*$/)
 }
 
-accountData.read = function (account, converter = fromBase64) {
+/**
+ * Parse data entries from **account** using **converter** and returns the
+ * namespace tree.
+ *  
+ * @param  {AccountResponse} account
+ * @param  {Function} converter The function used to convert account data
+ *     entries values from base64
+ * @return {Object}
+ */
+accountNamespace.read = function (account, converter = fromBase64) {
   const dataAttr = {}
   for (let key in account.data_attr) {
-    if (accountData.isValidKey(key)) {
+    if (accountNamespace.isValidPath(key)) {
       dataAttr[key] = converter(account.data_attr[key])
     }
   }
@@ -45,10 +57,18 @@ function expand (dataAttr) {
   return tree
 }
 
-accountData.write = function (account, dataTree) {
+/**
+ * Build a transaction that saves **dataTree**, which should be an Object
+ * similar to what `accountNamespace.read()` returns, as **account** data entries.
+ *
+ * @param  {AccountResponse} account
+ * @param  {Object} dataTree
+ * @return {Transaction}
+ */
+accountNamespace.write = function (account, dataTree) {
   const dataAttr = reduce(dataTree)
 
-  Object.keys(account.data_attr).filter(accountData.isValidKey).forEach(key => {
+  Object.keys(account.data_attr).filter(accountNamespace.isValidPath).forEach(key => {
     if (!dataAttr[key]) dataAttr[key] = null
     else if (dataAttr[key] === account.data_attr[key]) delete dataAttr[key]
   })
@@ -84,46 +104,3 @@ function toBase64 (value) {
   else if (!(value instanceof Buffer)) value = Buffer.from(value, "utf8")
   return value.toString("base64")
 }
-
-
-/*******************************************************************************
- * Demo
- */
-
-const account = new StellarSdk.Account("GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF", "0")
-account.data_attr = {
-  "....": toBase64("InvalidKey1"),
-  "conf.multisig": toBase64("InvalidKey2"),
-  "conf.multisig.collector": toBase64("GASE...TWUY"),
-  "conf.multisig.network": toBase64("test"),
-  "Invalid Key 3": toBase64("..."),
-  "profile.alias": toBase64("MisterTicot"),
-  "wallet.btc": toBase64("..."),
-  "wallet.eth": toBase64("..."),
-  "wallet.xrp": toBase64("...")
-}
-
-/// Parse
-const base64ToUtf8 = x => Buffer.from(x, "base64").toString("utf8")
-const dataTree = accountData.read(account, base64ToUtf8)
-console.log(dataTree)
-
-console.log()
-/// Iterate
-for (let coin in dataTree.wallet) {
-  console.log(coin + ": " + dataTree.wallet[coin])
-}
-
-console.log()
-/// Get scope object
-const scope = dataTree.conf && dataTree.conf.multisig
-console.log(scope)
-
-/// Rewrite scope
-if (!dataTree.conf) dataTree.conf = {}
-dataTree.conf.multisig = { collector: "https://example.org/.well_known/multisig.toml" }
-
-console.log()
-/// Write changes on the legder
-const tx = accountData.write(account, dataTree)
-console.log(tx.operations)
