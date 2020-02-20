@@ -62,11 +62,12 @@ accountNamespace.write = function (account, dataAttr) {
 }
 
 function makeWriteTx (account, dataAttr) {
-  const txBuilder = new StellarSdk.TransactionBuilder(account)
+  const txBuilder = new StellarSdk.TransactionBuilder(account, { fee: 100 })
   for (let key in dataAttr) {
     const operation = StellarSdk.Operation.manageData({ name: key, value: dataAttr[key] })
     txBuilder.addOperation(operation)
   }
+  txBuilder.setTimeout(120)
   return txBuilder.build()
 }
 
