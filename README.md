@@ -1,7 +1,7 @@
-# stellar-draft-0005
+# SEP-0018-samples
 
 Two possible implementations for
-[draft-0005](https://github.com/stellar/stellar-protocol/pull/199).
+[SEP-0018](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0018.md).
 
 * **Minimal implementation:**
   [flat.js](https://github.com/MisterTicot/stellar-draft-0005/blob/master/flat.js)
@@ -31,8 +31,8 @@ expose namespace as keys, not as actually namespaces.
 If you want to run the demo:
 
 ```sh
-git clone https://github.com/MisterTicot/stellar-draft-0005
-cd stellar-draft-0005
+git clone https://github.com/cosmic-plus-contribs/sep-0018-samples
+cd sep-0018-samples
 npm install
 node demo/flat.js
 node demo/tree.js

@@ -1,9 +1,9 @@
 {
-  "name": "stellar-draft-0005",
+  "name": "sep-0018-samples",
   "version": "1.0.0",
-  "description": "Possible implementations for draft-0005",
+  "description": "Possible implementations for SEP-0018",
   "author": "MisterTicot",
-  "repository": "github:MisterTicot/stellar-draft-0005",
+  "repository": "github:cosmic-plus-contribs/sep-0018-samples",
   "license": "MIT",
   "dependencies": {
     "safe-buffer": "^5.1.2",
